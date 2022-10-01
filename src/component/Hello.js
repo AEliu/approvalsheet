@@ -1,5 +1,5 @@
-const Hello = (props)=>{
-    return <h2>Hello , {props.name}</h2>
+const Hello = ({name})=>{
+    return <h2>Hello , {name}</h2>
 }
 
 export default Hello

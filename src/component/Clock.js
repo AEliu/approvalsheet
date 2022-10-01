@@ -1,7 +1,17 @@
-const Clock = (props)=>{
+import { useState } from "react"
+
+
+const Clock = ()=>{
+    const [ date, setCounter ] = useState(Date().toLocaleString())
+
+    setTimeout(
+        () => setCounter(Date().toLocaleString()),
+        1000
+      )
+
     return (
         <div>
-            <p>It is {props.date.toLocaleTimeString()}</p>
+            <p>It is {date}</p>
         </div>
     )
 }

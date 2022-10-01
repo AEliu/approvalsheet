@@ -25,7 +25,7 @@ const App = () => {
         </a>
         <h1>Hello world!</h1>
         <Hello name='cc' /> 
-        <Clock date={new Date()}/>
+        <Clock />
       </header>
     </div>
     
