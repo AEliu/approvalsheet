@@ -1,13 +1,19 @@
 import logo from './logo.svg';
 import './App.css';
+import React from 'react';
 
-function App() {
+import Hello from './component/Hello'
+import Clock from './component/Clock';
+
+
+const App = () => {
   return (
     <div className="App">
+      
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          Edit <code>src/App.js</code> and save t0o reload.
         </p>
         <a
           className="App-link"
@@ -17,8 +23,12 @@ function App() {
         >
           Learn React
         </a>
+        <h1>Hello world!</h1>
+        <Hello name='cc' /> 
+        <Clock date={new Date()}/>
       </header>
     </div>
+    
   );
 }
 
