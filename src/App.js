@@ -1,22 +1,30 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
 
-import Hello from "./component/Hello";
-import Clock from "./component/Clock";
-
-const Approvalform = ({ title, towho, onInputChange, approvals, setApprovals }) => {
+const Approvalform = ({
+  heading,
+  receiver,
+  setNewApproval,
+  approvals,
+  setApprovals,
+}) => {
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log('%cApp.js line:10 title', 'color: #007acc;', title);
+    console.log("%cApp.js line:10 title", "color: #007acc;", heading);
 
     const approvalObject = {
       id: timestamp(),
-      title: title,
-      towho: towho,
-    }
-    const newApprovals = approvals.concat(approvalObject)
-    localStorage.setItem('approval',JSON.stringify(newApprovals))
-    setApprovals(newApprovals)
+      heading: heading,
+      receiver: receiver,
+    };
+    const newApprovals = approvals.concat(approvalObject);
+    localStorage.setItem("approval", JSON.stringify(newApprovals));
+    setApprovals(newApprovals);
+    setNewApproval({
+      id: '',
+      heading: '',
+      receiver: '',
+    });
   };
 
   const timestamp = () => Date.now();
@@ -25,26 +33,27 @@ const Approvalform = ({ title, towho, onInputChange, approvals, setApprovals }) 
     const name = event.target.name;
     const value = event.target.value;
     console.log("%cApp.js line:20 name, value", "color: #007acc;", name, value);
-    onInputChange((values) => ({ ...values, [name]: value }));
+    setNewApproval((values) => ({ ...values, [name]: value }));
   };
 
   return (
     <form action="" onSubmit={handleSubmit}>
-      {/* <p>content:</p> */}
+      <p>填写发文信息:</p>
       <input
         type="text"
-        name="title"
+        name="heading"
         id=""
-        value={title}
+        value={heading}
         onChange={handleChange}
-        placeholder="title..."
+        placeholder="标题..."
       />
       <input
         type="text"
-        name="towho"
+        name="receiver"
         id=""
-        value={towho}
+        value={receiver}
         onChange={handleChange}
+        placeholder="主送机关……"
       />
       <button type="submit" className="button">
         Submit
@@ -55,23 +64,23 @@ const Approvalform = ({ title, towho, onInputChange, approvals, setApprovals }) 
 
 const App = () => {
   const [approvals, setApprovals] = useState([]);
-  const [newApproval, setNewApproval] = useState({});
+  const [newApproval, setNewApproval] = useState({
+    id: '',
+    heading: '',
+    receiver: '',
+  });
 
   useEffect(() => {
-    const allApprovals = JSON.parse(localStorage.getItem("approval")) 
-    if(allApprovals)
-      setApprovals(allApprovals)
-  },[]);
+    const allApprovals = JSON.parse(localStorage.getItem("approval"));
+    if (allApprovals) setApprovals(allApprovals);
+  }, []);
 
   return (
     <>
-      <Hello name="cc" />
-      <Clock />
-
       <Approvalform
-        title={newApproval.title}
-        towho={newApproval.towho}
-        onInputChange={setNewApproval}
+        heading={newApproval.heading}
+        receiver={newApproval.receiver}
+        setNewApproval={setNewApproval}
         approvals={approvals}
         setApprovals={setApprovals}
       />
