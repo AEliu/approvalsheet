@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Hello from "./component/Hello";
 import Clock from "./component/Clock";
@@ -14,7 +14,9 @@ const Approvalform = ({ title, towho, onInputChange, approvals, setApprovals }) 
       title: title,
       towho: towho,
     }
-    setApprovals(approvals.concat(approvalObject))
+    const newApprovals = approvals.concat(approvalObject)
+    localStorage.setItem('approval',JSON.stringify(newApprovals))
+    setApprovals(newApprovals)
   };
 
   const timestamp = () => Date.now();
@@ -52,11 +54,14 @@ const Approvalform = ({ title, towho, onInputChange, approvals, setApprovals }) 
 };
 
 const App = () => {
-  const [approvals, setApprovals] = useState([
-    JSON.parse(localStorage.getItem("approval")) || ''
-  ]);
-
+  const [approvals, setApprovals] = useState([]);
   const [newApproval, setNewApproval] = useState({});
+
+  useEffect(() => {
+    const allApprovals = JSON.parse(localStorage.getItem("approval")) 
+    if(allApprovals)
+      setApprovals(allApprovals)
+  },[]);
 
   return (
     <>
