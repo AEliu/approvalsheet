@@ -1,5 +1,6 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
 const Approvalform = ({
   heading,
@@ -10,7 +11,6 @@ const Approvalform = ({
 }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("%cApp.js line:10 title", "color: #007acc;", heading);
 
     const approvalObject = {
       id: timestamp(),
@@ -21,9 +21,9 @@ const Approvalform = ({
     localStorage.setItem("approval", JSON.stringify(newApprovals));
     setApprovals(newApprovals);
     setNewApproval({
-      id: '',
-      heading: '',
-      receiver: '',
+      id: "",
+      heading: "",
+      receiver: "",
     });
   };
 
@@ -62,12 +62,35 @@ const Approvalform = ({
   );
 };
 
+const Approval = ({ approval }) => {
+  let t = new Date(approval.id);
+  let date = t.toLocaleDateString();
+  return (
+    <li>
+      {date}-{approval.heading}
+    </li>
+  );
+};
+
+const Sheets = ({ sheets }) => (
+  <div>
+    <h2>Notes</h2>
+    <ul>
+      {sheets.map((sheet) => (
+        <li key={sheet.id}>
+          <Link to={`/sheets/${sheet.id}`}>{sheet.heading}</Link>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
 const App = () => {
   const [approvals, setApprovals] = useState([]);
   const [newApproval, setNewApproval] = useState({
-    id: '',
-    heading: '',
-    receiver: '',
+    id: "",
+    heading: "",
+    receiver: "",
   });
 
   useEffect(() => {
@@ -75,15 +98,46 @@ const App = () => {
     if (allApprovals) setApprovals(allApprovals);
   }, []);
 
+  const padding = {
+    padding: 5,
+  };
+
   return (
     <>
-      <Approvalform
-        heading={newApproval.heading}
-        receiver={newApproval.receiver}
-        setNewApproval={setNewApproval}
-        approvals={approvals}
-        setApprovals={setApprovals}
-      />
+      <Router>
+        <Link to="/sheets" style={padding}>
+          HISTORY
+        </Link>
+        <Link to="/" style={padding}>
+          HOME
+        </Link>
+        <Routes>
+          <Route path="/sheets" element={<Sheets sheets={approvals} />} />
+          <Route
+            path="/"
+            element={
+              <Approvalform
+                heading={newApproval.heading}
+                receiver={newApproval.receiver}
+                setNewApproval={setNewApproval}
+                approvals={approvals}
+                setApprovals={setApprovals}
+              />
+            }
+          />
+        </Routes>
+      </Router>
+
+      <br />
+
+      {/* <ul>
+        {approvals
+          .slice(-10)
+          .reverse()
+          .map((approval) => (
+            <Approval key={approval.id.toString()} approval={approval} />
+          ))}
+      </ul> */}
     </>
   );
 };
