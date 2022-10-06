@@ -1,6 +1,13 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  useParams,
+  useNavigate,
+} from "react-router-dom";
 
 const Approvalform = ({
   heading,
@@ -9,6 +16,8 @@ const Approvalform = ({
   approvals,
   setApprovals,
 }) => {
+  const navigate = useNavigate();
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -25,6 +34,7 @@ const Approvalform = ({
       heading: "",
       receiver: "",
     });
+    navigate(`/approvalsheet/sheets/${approvalObject.id}`)
   };
 
   const timestamp = () => Date.now();
@@ -36,33 +46,46 @@ const Approvalform = ({
     setNewApproval((values) => ({ ...values, [name]: value }));
   };
 
+  const padding = {
+    padding: 5,
+  };
+
   return (
-    <form action="" onSubmit={handleSubmit}>
-      <p>填写发文信息:</p>
-      <input
-        type="text"
-        name="heading"
-        id=""
-        value={heading}
-        onChange={handleChange}
-        placeholder="标题..."
-      />
-      <input
-        type="text"
-        name="receiver"
-        id=""
-        value={receiver}
-        onChange={handleChange}
-        placeholder="主送机关……"
-      />
-      <button type="submit" className="button">
-        Submit
-      </button>
-    </form>
+    <>
+      <form action="" onSubmit={handleSubmit}>
+        <p>填写发文信息:</p>
+        <input
+          type="text"
+          name="heading"
+          id=""
+          value={heading}
+          onChange={handleChange}
+          placeholder="标题..."
+        />
+        <input
+          type="text"
+          name="receiver"
+          id=""
+          value={receiver}
+          onChange={handleChange}
+          placeholder="主送机关……"
+        />
+        <button type="submit" className="button">
+          Submit
+        </button>
+      </form>
+      
+      <Link to="/approvalsheet/sheets" style={padding}>
+        发文历史
+      </Link>
+
+    </>
   );
 };
 
-const Approval = ({ approval }) => {
+const Approval = ({ approvals }) => {
+  let id = useParams().id;
+  const approval = approvals.find((n) => n.id === Number(id));
   let t = new Date(approval.id);
   let date = t.toLocaleDateString();
   return (
@@ -72,18 +95,25 @@ const Approval = ({ approval }) => {
   );
 };
 
-const Sheets = ({ sheets }) => (
+const Sheets = ({ sheets }) => {
+  const padding = {
+    padding: 5,
+  };
+  return (
   <div>
     <h2>Notes</h2>
     <ul>
       {sheets.map((sheet) => (
         <li key={sheet.id}>
-          <Link to={`/sheets/${sheet.id}`}>{sheet.heading}</Link>
+          <Link to={`/approvalsheet/sheets/${sheet.id}`}>{sheet.heading}</Link>
         </li>
       ))}
     </ul>
+    <Link to="/approvalsheet/" style={padding}>
+        HOME
+      </Link>
   </div>
-);
+)};
 
 const App = () => {
   const [approvals, setApprovals] = useState([]);
@@ -98,23 +128,24 @@ const App = () => {
     if (allApprovals) setApprovals(allApprovals);
   }, []);
 
-  const padding = {
-    padding: 5,
-  };
+  
 
   return (
     <>
       <Router>
-        <Link to="/sheets" style={padding}>
+        {/* <Link to="/approvalsheet/sheets" style={padding}>
           HISTORY
-        </Link>
-        <Link to="/" style={padding}>
+        </Link> */}
+        {/* <Link to="/approvalsheet/" style={padding}>
           HOME
-        </Link>
+        </Link> */}
         <Routes>
-          <Route path="/sheets" element={<Sheets sheets={approvals} />} />
           <Route
-            path="/"
+            path="/approvalsheet/sheets"
+            element={<Sheets sheets={approvals} />}
+          />
+          <Route
+            path="/approvalsheet/"
             element={
               <Approvalform
                 heading={newApproval.heading}
@@ -124,6 +155,10 @@ const App = () => {
                 setApprovals={setApprovals}
               />
             }
+          />
+          <Route
+            path="/approvalsheet/sheets/:id"
+            element={<Approval approvals={approvals} />}
           />
         </Routes>
       </Router>
