@@ -19,6 +19,8 @@ const Approvalform = ({
   approvals,
   setApprovals,
 }) => {
+
+
   const navigate = useNavigate();
 
   const handleSubmit = (event) => {
@@ -101,7 +103,7 @@ const Sheets = ({ sheets }) => {
   };
   return (
     <div>
-      <h2>Notes</h2>
+      <h2>全部发文单</h2>
       <ul>
         {sheets.map((sheet) => (
           <li key={sheet.id}>
@@ -127,57 +129,62 @@ const PageNotFound = () => {
 };
 
 const App = () => {
-  const [approvals, setApprovals] = useState([]);
+  const [approvals, setApprovals] = useState(JSON.parse(localStorage.getItem("approval")) || []);
   const [newApproval, setNewApproval] = useState({
     id: "",
     heading: "",
     receiver: "",
   });
+  console.log('%cApp.js line:136 approvals', 'color: #007acc;', approvals);
 
   useEffect(() => {
+    console.log('%cApp.js line:139 approvals', 'color: #007acc;', approvals);
     const allApprovals = JSON.parse(localStorage.getItem("approval"));
+    console.log('%cApp.js line:140 allApprovals', 'color: #007acc;', allApprovals);
     if (allApprovals) setApprovals(allApprovals);
   }, []);
 
-  const match = useMatch("/approvalsheet/sheets/:id")
-  const sheet = match ? approvals.find((n) => n.id === Number(match.params.id))
-    : null
+  console.log("%cApp.js line:144 approvals", "color: #007acc;", approvals);
+  const match = useMatch("/approvalsheet/sheets/:id");
+  const sheet = match
+    ? approvals.find((n) => n.id === Number(match.params.id))
+    : null;
 
+  console.log("%cApp.js line:150 sheet", "color: #007acc;", sheet);
 
   return (
     <>
-      
+      <Routes>
+        <Route
+          path="/approvalsheet/"
+          element={
+            <Approvalform
+              heading={newApproval.heading}
+              receiver={newApproval.receiver}
+              setNewApproval={setNewApproval}
+              approvals={approvals}
+              setApprovals={setApprovals}
+            />
+          }
+        />
 
-        <Routes>
-          <Route
-            path="/approvalsheet/sheets"
-            element={<Sheets sheets={approvals} />}
-          />
-          <Route
-            path="/approvalsheet/"
-            element={
-              <Approvalform
-                heading={newApproval.heading}
-                receiver={newApproval.receiver}
-                setNewApproval={setNewApproval}
-                approvals={approvals}
-                setApprovals={setApprovals}
-              />
-            }
-          />
-          <Route
-            path="/approvalsheet/sheets/:id"
-            element={<Approval sheet={sheet} />}
-          />
-          <Route path="/approvalsheet/404" element={<PageNotFound />} />
-          <Route
-            path="*"
-            element={<Navigate to="/approvalsheet/404" replace />}
-          />
-        </Routes>
-      
+        <Route
+          path="/approvalsheet/sheets"
+          element={<Sheets sheets={approvals} />}
+        />
 
-      <br />
+        <Route
+          path="/approvalsheet/sheets/:id"
+          element={<Approval sheet={sheet} />}
+        />
+
+        <Route path="/approvalsheet/404" element={<PageNotFound />} />
+
+        <Route
+          path="*"
+          element={<Navigate to="/approvalsheet/404" replace />}
+        />
+      </Routes>
     </>
   );
 };
